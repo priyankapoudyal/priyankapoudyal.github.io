@@ -1,0 +1,46 @@
+name: github pages
+
+on:
+  push:
+    branches:
+      - main  # Set a branch to deploy
+  pull_request:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-20.04
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          submodules: true  # Fetch Hugo themes (true OR recursive)
+          fetch-depth: 0    # Fetch all history for .GitInfo and .Lastmod
+
+      - name: Setup GO
+        uses: actions/setup-go@v3
+        with:
+          go-version: '1.17.7' # The Go version to download (if necessary) and use.
+  
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: '17.6.0'
+  
+      - name: Setup Hugo
+        uses: peaceiris/actions-hugo@v2
+        with:
+          hugo-version: '0.97.3'
+          extended: true
+
+      - name: Build
+        run: |-
+          npm install
+          hugo --minify
+        env:
+          HUGO_ENV: production
+
+      - name: Deploy
+        uses: peaceiris/actions-gh-pages@v3
+        if: github.ref == 'refs/heads/main'
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
