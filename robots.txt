@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: https://priyankapoudyal.github.io/sitemap.xml
